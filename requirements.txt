@@ -1,0 +1,12 @@
+openai==1.76.0
+uvicorn==0.34.2
+langchain==0.3.24
+langchain-community==0.3.22
+fastapi==0.115.9
+chromadb==1.0.6
+pypdf==5.4.0
+python-dotenv==1.1.0
+unstructured==0.17.2
+langchain-openai==0.3.14
+langchain-chroma==0.2.3
+python-multipart==0.0.20
