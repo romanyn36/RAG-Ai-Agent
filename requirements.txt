@@ -10,3 +10,5 @@ unstructured==0.17.2
 langchain-openai==0.3.14
 langchain-chroma==0.2.3
 python-multipart==0.0.20
+langchain-experimental==0.3.4
+duckduckgo-search==8.0.1
