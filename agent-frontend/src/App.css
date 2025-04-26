@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+/* Custom Bootstrap Info Color */
+.btn-primary, .alert-primary, .text-primary, .bg-primary {
+  color: #ffffff !important;  /* Change the text color */
+  background-color: #384D6C !important; /* Change the background color */
+  border-color: #17a2b8 !important; /* Change the border color */
+}
+.mainContainer {
+  min-height: 80vh;
+  width: 100%;
+}
