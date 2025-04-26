@@ -6,9 +6,10 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./ChatPage.css";
 import { Button, InputGroup, Form, Image } from "react-bootstrap";
-import { BsChevronLeft, BsChevronRight, BsChatTextFill, BsPencilSquare, BsTrash, BsPaperclip, BsSend } from "react-icons/bs";
+import { BsChevronLeft, BsChevronRight, BsChatTextFill, BsPencilSquare, BsTrash, BsPaperclip, BsSend, BsSearch } from "react-icons/bs";
 import AlertModal from "../../components/AlertModal";
 import apiClient from '../../AppClient';
+import Loader from '../../components/Loader';
 
 const Responseloader = () => {
   return (
@@ -28,7 +29,10 @@ const ChatPage = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [modeltype, setModelType] = useState(null);
   const [userInfo, setUserInfo] = useState({ name: "romani" });
-  const [loading, setLoading] = useState(false);
+  const [loadingChats, setLoadingChats] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [errorChats, setErrorChats] = useState('');
+  const [errorMessages, setErrorMessages] = useState('');
   const handleToggleSidebar = () => {
     setCollapsed(!collapsed);
   };
@@ -57,6 +61,7 @@ const ChatPage = () => {
   }, [userInfo, navigate]);
 
   useEffect(() => {
+    setLoadingChats(true);
     apiClient.get('/chats/')
       .then(response => {
         const chats = response.data
@@ -64,23 +69,32 @@ const ChatPage = () => {
         console.log("chats", chats)
         if (chats.length > 0) setCurrentChat(chats[0].id);
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        setErrorChats(error.message || error.response.data.detail || "Error loading chats");
+        console.error("Error loading chats", error);
+      }
+      );
+    setLoadingChats(false);
   }, [userInfo, navigate]);
 
   useEffect(() => {
-    // When changing chats, load the corresponding messages
-    // chats/1/messages/
     if (currentChat) {
+      setLoadingMessages(true);
+      setErrorMessages('');
       apiClient.get(`/chats/${currentChat}/messages/`)
         .then(response => {
           const messages = response.data;
           setMessages(messages);
-          console.log("messages", messages)
+          console.log("messages", messages);
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+          setErrorMessages(error.message || error.response?.data?.detail || "Error loading messages");
+          console.error("Error loading messages", error);
+        })
+        .finally(() => {
+          setLoadingMessages(false);
+        });
     }
-
-
   }, [currentChat]);
 
   const handleRetry = () => {
@@ -132,7 +146,7 @@ const ChatPage = () => {
       formData.append("files", selectedFile);
     }
     formData.append("query", input);
-    formData.append("agent", true);
+    formData.append("agent", false);
 
     // Send message to the server using the combined endpoint
     apiClient.post(`/chats/${currentChat}/send/`, formData)
@@ -145,7 +159,7 @@ const ChatPage = () => {
             setCurrentChat(response.data.chat_id);
             setChats(prevChats => [...prevChats, { id: response.data.chat_id, name: response.data.chat_name }]);
           }
-        }, 1000);
+        }, 150);
       })
       .catch(error => {
         setWaitingForReply(false);
@@ -246,64 +260,115 @@ const ChatPage = () => {
           >
             + New Chat
           </Button>
+          <div className="search-container d-none">
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="basic-addon1"><BsSearch /></InputGroup.Text>
+              <Form.Control
+                placeholder="Search chats..."
+                aria-label="Search chats"
+                aria-describedby="basic-addon1"
+                className="search-input"
+              />
+            </InputGroup>
+          </div>
 
-          <div className="chat-list" ref={chatListRef}>
-            {chats?.map((chat) => (
-              <div
-                key={chat.id}
-                className={`chat-item ${currentChat === chat.id ? 'active' : ''}`}
-                onClick={() => handleChatClick(chat.id)}
-              >
-                <div className="chat-item-content">
-                  <BsChatTextFill className='chat-icon' />
-                  <span className='chat-name'>{chat.name}</span>
-                </div>
-                <div className="chat-actions">
-                  {/* Rename Chat Modal */}
-                  <AlertModal
-                    show={renameModal}
-                    customebutton={<Button
-                      variant="link"
-                      className="action-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setNewChatName(chat.name);
-                        setRenameModal(true);
-                      }}
-                    >
-                      <BsPencilSquare />
-                    </Button>}
-                    onHide={() => setRenameModal(false)}
-                    myaction={handleRenameChat}
-                    title="Rename Chat"
-                    message={<Form.Control type="text" value={newChatName} onChange={(e) => setNewChatName(e.target.value)} />}
-                    savetitle="Rename"
-                    variant="primary"
-                  />
-
-
-                  <AlertModal
-                    customebutton={
-                      <Button
-                        variant="link"
-                        className="action-btn"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <BsTrash />
-                      </Button>
-                    }
-                    myaction={() => handleDeleteChat(chat.id)}
-                    title="Delete Chat"
-                    message="Are you sure you want to delete this chat?"
-                    savetitle="Delete Chat"
-                    variant="danger"
-                  />
-                </div>
+          {/* Enhanced chat list loading and error display */}
+          <div className="chat-list-container">
+            {loadingChats ? (
+              <div className="loader-container">
+                <Loader />
+                <p className="text-center mt-2">Loading conversations...</p>
               </div>
-            ))}
+            ) : errorChats ? (
+              <div className="error-container">
+                <Message variant="danger">{errorChats}</Message>
+                <Button 
+                  variant="outline-primary" 
+                  size="sm" 
+                  className="mt-2"
+                  onClick={() => {
+                    setErrorChats('');
+                    setLoadingChats(true);
+                    apiClient.get('/chats/')
+                      .then(response => {
+                        setChats(response.data);
+                        if (response.data.length > 0) setCurrentChat(response.data[0].id);
+                      })
+                      .catch(error => {
+                        setErrorChats(error.message || error.response?.data?.detail || "Error loading chats");
+                      })
+                      .finally(() => setLoadingChats(false));
+                  }}
+                >
+                  Retry
+                </Button>
+              </div>
+            ) : (
+              <div className="chat-list" ref={chatListRef}>
+                {chats?.length > 0 ? (
+                  chats.map((chat) => (
+                    <div
+                      key={chat.id}
+                      className={`chat-item ${currentChat === chat.id ? 'active' : ''}`}
+                      onClick={() => handleChatClick(chat.id)}
+                    >
+                      <div className="chat-item-content">
+                        <BsChatTextFill className='chat-icon' />
+                        <span className='chat-name'>{chat.name}</span>
+                      </div>
+                      <div className="chat-actions">
+                        {/* Rename Chat Modal */}
+                        <AlertModal
+                          show={renameModal}
+                          customebutton={<Button
+                            variant="link"
+                            className="action-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setNewChatName(chat.name);
+                              setRenameModal(true);
+                            }}
+                          >
+                            <BsPencilSquare />
+                          </Button>}
+                          onHide={() => setRenameModal(false)}
+                          myaction={handleRenameChat}
+                          title="Rename Chat"
+                          message={<Form.Control type="text" value={newChatName} onChange={(e) => setNewChatName(e.target.value)} />}
+                          savetitle="Rename"
+                          variant="primary"
+                        />
+
+
+                        <AlertModal
+                          customebutton={
+                            <Button
+                              variant="link"
+                              className="action-btn"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <BsTrash />
+                            </Button>
+                          }
+                          myaction={() => handleDeleteChat(chat.id)}
+                          title="Delete Chat"
+                          message="Are you sure you want to delete this chat?"
+                          savetitle="Delete Chat"
+                          variant="danger"
+                        />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center">No chats available</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
+
       </nav>
+
 
       {/* Main content */}
 
@@ -346,29 +411,78 @@ const ChatPage = () => {
           )}
 
           <div className="messages-container">
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`message-wrapper ${msg.type === "user" ? 'user-wrapper' : 'agent-wrapper'}`}
-              >
-                <div className={`message-bubble ${msg.type === "user" ? 'user-message' : 'agent-message'}`}>
-                  {msg.type === "user" ? (
-                    <div className="message-content user-content">
-                      {msg.body}
-                      <div className="user-icon"><Image src="/images/user.png" alt="User" /></div>
-                      
-                    </div>
-                  ) : (
-                    <div className="message-content agent-content">
-                      <div className="agent-icon"><Image src="/images/ai.png" alt="Agent" /></div>
-                      <div className="agent-text" dangerouslySetInnerHTML={{ __html: formatText(msg.body) }}></div>
-                    </div>
-                  )}
-                </div>
+            {loadingMessages ? (
+              <div className="messages-loading-container">
+                <Loader />
+                <p className="text-center mt-2">Loading conversation...</p>
               </div>
-            ))}
-
-            {error && <Message variant='danger'>{error}</Message>}
+            ) : errorMessages ? (
+              <div className="messages-error-container">
+                <Message variant="danger">{errorMessages}</Message>
+                <Button 
+                  variant="outline-primary" 
+                  size="sm" 
+                  className="mt-2 d-block mx-auto"
+                  onClick={() => {
+                    setErrorMessages('');
+                    setLoadingMessages(true);
+                    apiClient.get(`/chats/${currentChat}/messages/`)
+                      .then(response => {
+                        setMessages(response.data);
+                      })
+                      .catch(error => {
+                        setErrorMessages(error.message || error.response?.data?.detail || "Error loading messages");
+                      })
+                      .finally(() => setLoadingMessages(true));
+                  }}
+                >
+                  Retry Loading Messages
+                </Button>
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="empty-messages-container">
+                <p className="text-center text-muted">No messages yet. Start the conversation!</p>
+              </div>
+            ) : (
+              messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`message-wrapper ${msg.type === "user" ? 'user-wrapper' : 'agent-wrapper'}`}
+                >
+                  <div className={`message-bubble ${msg.type === "user" ? 'user-message' : 'agent-message'}`}>
+                    {/* Message content remains the same */}
+                    {msg.type === "user" ? (
+                      <div className="message-content user-content">
+                        {msg.body}
+                        <div className="user-icon"><Image src="/images/user.png" alt="User" /></div>
+                      </div>
+                    ) : (
+                      <div className="message-content agent-content">
+                        <div className="agent-icon"><Image src="/images/ai.png" alt="Agent" /></div>
+                        <div className="agent-text" dangerouslySetInnerHTML={{ __html: formatText(msg.body) }}></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+            
+            {error && (
+              <div className="general-error-container">
+                <Message variant='danger'>
+                  {error}
+                  <Button 
+                    variant="outline-danger" 
+                    size="sm" 
+                    className="ms-2"
+                    onClick={() => setError('')}
+                  >
+                    Dismiss
+                  </Button>
+                </Message>
+              </div>
+            )}
+            
             {waitingForReply && <Responseloader />}
             <div ref={messagesEndRef} />
           </div>
