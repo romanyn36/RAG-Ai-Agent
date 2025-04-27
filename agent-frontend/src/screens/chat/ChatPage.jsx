@@ -5,7 +5,9 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./ChatPage.css";
 import { Button, InputGroup, Form, Image } from "react-bootstrap";
-import { BsChevronLeft, BsChevronRight, BsChatTextFill, BsPencilSquare, BsTrash, BsPaperclip, BsSend, BsSearch, BsMoon, BsSun } from "react-icons/bs";
+import { BsChevronLeft, BsChevronRight, BsChatTextFill, BsPencilSquare, BsTrash, BsPaperclip, BsSend, BsSearch, BsMoon, BsSun, BsQuestionCircle, BsLinkedin, BsTwitter, BsGithub } from "react-icons/bs";
+import { SiKaggle } from "react-icons/si";
+import { FaTelegramPlane } from "react-icons/fa";
 import AlertModal from "../../components/AlertModal";
 import apiClient from '../../AppClient';
 import Loader from '../../components/Loader';
@@ -65,12 +67,14 @@ const ChatPage = () => {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [errorChats, setErrorChats] = useState('');
   const [errorMessages, setErrorMessages] = useState('');
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showDeveloperModal, setShowDeveloperModal] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
     // Check local storage for dark mode preference
     const savedMode = localStorage.getItem('darkMode');
     return savedMode === 'true';
   });
-  
+
   // Effect to apply dark mode to document body
   useEffect(() => {
     if (darkMode) {
@@ -85,22 +89,22 @@ const ChatPage = () => {
   const toggleDarkMode = () => {
     setDarkMode(prevMode => !prevMode);
   };
-  
+
   const handleToggleSidebar = () => {
     setCollapsed(!collapsed);
   };
   // chat 
-  const [chats, setChats] = useState([]); 
-  const [currentChat, setCurrentChat] = useState(); 
-  const [messages, setMessages] = useState([]); 
+  const [chats, setChats] = useState([]);
+  const [currentChat, setCurrentChat] = useState();
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [renameModal, setRenameModal] = useState(false);
   const [newChatName, setNewChatName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const chatListRef = useRef(null); 
+  const chatListRef = useRef(null);
   const chatContentRef = useRef(null);
   const [waitingForReply, setWaitingForReply] = useState(false);
-  const messagesEndRef = useRef(null); 
+  const messagesEndRef = useRef(null);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -191,7 +195,7 @@ const ChatPage = () => {
       formData.append("files", selectedFile);
     }
     formData.append("query", input);
-    formData.append("agent", agentMode); 
+    formData.append("agent", agentMode);
 
     // Send message to the server using the combined endpoint
     apiClient.post(`/chats/${currentChat}/send/`, formData)
@@ -430,13 +434,21 @@ const ChatPage = () => {
               <img src="/images/ai.png" alt="RAG AI-Agent" className="app-logo" />
               <h1 className="app-name">RAG AI-Agent</h1>
             </div>
-            {currentChat && (
-              <h2 className="current-chat-title">
-                {chats.find(chat => chat.id === currentChat)?.name || "Chat"}
-              </h2>
-            )}
           </div>
-          <button 
+          <button
+            className="dark-mode-toggle"
+            onClick={() => setShowDeveloperModal(true)}
+            title="About Developer"
+          >
+            <BsGithub className="dev-icon" />
+          </button>
+          <button
+            className="dark-mode-toggle"
+            onClick={() => setShowHelpModal(true)}
+          >
+            <BsQuestionCircle className="help-icon" />
+          </button>
+          <button
             className="dark-mode-toggle"
             onClick={toggleDarkMode}
             title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
@@ -641,6 +653,150 @@ const ChatPage = () => {
             </div>
           </div>
         )}
+      </div>
+      <HelpModal
+        show={showHelpModal}
+        onHide={() => setShowHelpModal(false)}
+      />
+      <Developer
+        show={showDeveloperModal}
+        onHide={() => setShowDeveloperModal(false)}
+      />
+    </div>
+  );
+};
+
+const HelpModal = ({ show, onHide }) => {
+  return (
+    <div className={`modal ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }}>
+      <div className="modal-dialog modal-dialog-centered modal-lg">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">About RAG AI-Agent</h5>
+            <button type="button" className="btn-close" onClick={onHide}></button>
+          </div>
+          <div className="modal-body help-modal-content">
+            <div className="help-section">
+              <h4 className="section-title">How to Use RAG AI-Agent</h4>
+
+              <div className="feature-section">
+                <div className="feature-icon-wrapper">
+                  <span className="feature-icon">📄</span>
+                </div>
+                <div className="feature-details">
+                  <h5>Document Processing</h5>
+                  <p>Upload documents (PDF, TXT, DOCX) to provide context for the AI. Click the paperclip icon to attach files.</p>
+                </div>
+              </div>
+
+              <div className="feature-section">
+                <div className="feature-icon-wrapper">
+                  <span className="feature-icon">💬</span>
+                </div>
+                <div className="feature-details">
+                  <h5>Asking Questions</h5>
+                  <p>Type your questions in natural language. The AI will use uploaded documents as context for more accurate answers.</p>
+                </div>
+              </div>
+
+              <div className="feature-section">
+                <div className="feature-icon-wrapper">
+                  <span className="feature-icon">🤖</span>
+                </div>
+                <div className="feature-details">
+                  <h5>Agent Modes</h5>
+                  <ul>
+                    <li><strong>Simple Mode:</strong> Direct question answering without complex reasoning.</li>
+                    <li><strong>Agent Mode:</strong> Advanced reasoning with step-by-step explanation of the AI's thought process.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="feature-section">
+                <div className="feature-icon-wrapper">
+                  <span className="feature-icon">📂</span>
+                </div>
+                <div className="feature-details">
+                  <h5>Managing Conversations</h5>
+                  <p>Create new chats, rename them, or delete old ones using the sidebar controls.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="about-section mt-4">
+              <h4 className="section-title">About the Project</h4>
+              <p>RAG AI-Agent is a Retrieval-Augmented Generation AI assistant that combines the power of large language models with document-based knowledge retrieval. It allows users to have conversational interactions with their documents by uploading files which are then semantically parsed, indexed, and made available for natural language queries.</p>
+              <div className="version-info">
+                <h5>Developed by</h5>
+                <p><a href="https://www.linkedin.com/in/romaninasrat/" target="_blank" rel="noreferrer">Romani Nasrat</a></p>
+                <h5>Version</h5>
+                <p>v1.0.0</p>
+                <p><small>Licensed under <a href="https://github.com/romanyn36/RAG-Ai-Agent/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT</a></small></p>
+              </div>
+            </div>
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-primary" onClick={onHide}>Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+const Developer = ({ show, onHide }) => {
+  return (
+    <div className={`modal ${show ? 'show' : ''}`} style={{ display: show ? 'block' : 'none' }}>
+      <div className="modal-dialog modal-dialog-centered modal-lg">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">About Developer</h5>
+            <button type="button" className="btn-close" onClick={onHide}></button>
+          </div>
+          <div className="modal-body help-modal-content">
+
+            <div className="about-section mt-4">
+              <h4 className="section-title">About the Developer</h4>
+              <div className="developer-section">
+                <div className="developer-info">
+                  <div className="developer-bio">
+                    <p><strong>Romani Nasrat</strong> – AI Engineer and Backend Developer</p>
+                    <p>Feel free to reach out for collaborations, questions, or new projects!</p>
+                    <p>Email: <a href="mailto:romani.nasrat@gmail.com">romani.nasrat@gmail.com</a></p>
+                  </div>
+                  <div className="social-icons-container">
+                    <h6 className="social-title">Connect with me</h6>
+                    <div className="social-icons">
+                      <a href="https://www.linkedin.com/in/romaninasrat/" target="_blank" rel="noreferrer" className="social-link">
+                        <BsLinkedin size={24} title="LinkedIn" />
+                      </a>
+                      <a href="https://x.com/RomaniNasrat" target="_blank" rel="noreferrer" className="social-link">
+                        <BsTwitter size={24} title="Twitter/X" />
+                      </a>
+                      <a href="https://github.com/romanyn36" target="_blank" rel="noreferrer" className="social-link">
+                        <BsGithub size={24} title="GitHub" />
+                      </a>
+                      <a href="https://kaggle.com/romanyn36" target="_blank" rel="noreferrer" className="social-link">
+                        <SiKaggle size={24} title="Kaggle" />
+                      </a>
+                      <a href="https://t.me/romanyn36" target="_blank" rel="noreferrer" className="social-link">
+                        <FaTelegramPlane size={24} title="Telegram" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="version-info">
+                <h5>Version</h5>
+                <p>v1.0.0</p>
+                <p><small>Licensed under <a href="https://github.com/romanyn36/RAG-Ai-Agent/blob/main/LICENSE" target="_blank" rel="noreferrer">MIT</a></small></p>
+              </div>
+            </div>
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-primary" onClick={onHide}>Close</button>
+          </div>
+        </div>
       </div>
     </div>
   );

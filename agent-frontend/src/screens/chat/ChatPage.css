@@ -790,3 +790,67 @@ body.dark-mode {
   margin-top: 5px;
 }
 
+.modal.show {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.help-section h5 {
+  margin-top: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.help-section p, .help-section ul {
+  margin-bottom: 12px;
+}
+
+.about-section {
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+}
+
+/* Fix for modal in dark mode */
+.dark-mode .modal-content {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.dark-mode .modal-header, 
+.dark-mode .modal-footer {
+  border-color: var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+.dark-mode .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Social icons styling for developer modal */
+.social-icons-container {
+  margin-top: 15px;
+}
+
+.social-title {
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.social-icons {
+  display: flex;
+  gap: 15px;
+}
+
+.social-link {
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.social-link:hover {
+  color: #0d6efd;
+  transform: translateY(-3px);
+}
+
+.dark-mode .social-link:hover {
+  color: #6ea8ff;
+}
+
