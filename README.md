@@ -151,6 +151,19 @@ The application follows a client-server architecture with the following componen
 
 ---
 
+## Pipeline 
+- The pipeline for processing user queries is as follows:
+- first the user uploads a document, then the system processes the document and splits it into chunks. The chunks are then embedded and stored in the vector database. When the user asks a question, the system retrieves relevant chunks from the vector database based on the query. The retrieved chunks are then used to generate a response using the OpenAI language model. The response is displayed to the user in the chat interface.
+- 
+1. **User Input:** User submits a question or query through the chat interface.
+2. **Document Retrieval:** The system retrieves relevant documents from the vector database based on the query.
+3. **Context Generation:** The retrieved documents are processed to generate context for the query.
+4. **Agent Execution:** The agent uses the context to generate a response, optionally using reasoning steps and tools.
+5. **Response Generation:** The agent generates a response based on the context and reasoning steps.
+6. **Response Display:** The response is displayed in the chat interface, along with any reasoning steps taken by the agent.
+7. **User Interaction:** The user can continue the conversation, ask follow-up questions, or upload new documents.
+---
+
 ## :white_check_mark: Requirements
 
 Before starting, ensure you have the following installed:
