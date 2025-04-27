@@ -4,16 +4,16 @@
 </div>
 <h1 align="center">RAG AI-Agent</h1>
 <div align="center" id="top" class="flex">
-  <img src="images/main.jpg" alt="RAG AI-Agent" style="width: 100%; max-width: 800px; margin-bottom: 20px;" />
+  <img src="images/main.jpg" alt="RAG AI-Agent" style="width: 400px; max-width: 400px; margin-bottom: 20px;" />
   <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-    <img src="images/search.jpg" alt="RAG AI-Agent" style="width: 48%; max-width: 400px;" />
-    <img src="images/about.jpg" alt="RAG AI-Agent" style="width: 48%; max-width: 400px;" />
+    <img src="images/search.jpg" alt="RAG AI-Agent" style="width: 350px; max-width: 350px;" />
+    <img src="images/about.jpg" alt="RAG AI-Agent" style="width: 350px; max-width: 350px;" />
   </div>
   &#xa0;
 </div>
 <!-- demo -->
 <div align="center">
-  <img src="images/demo.gif" alt="RAG AI-Agent" style="width: 100%; max-width: 800px; margin-top: 20px;" />
+  <img src="images/demo.gif" alt="RAG AI-Agent" style="width: 350px; max-width: 350px; margin-top: 20px;" />
 </div>
 
 
@@ -23,6 +23,28 @@
   <img alt="Repository size" src="https://img.shields.io/github/repo-size/romanyn36/RAG-AI-Agent?color=56BEB8">
   <img alt="License" src="https://img.shields.io/github/license/romanyn36/RAG-AI-Agent?color=56BEB8">
 </p>
+
+<div align="center">
+    <img src="https://img.shields.io/badge/LangChain-000000?style=for-the-badge&logo=chainlink&logoColor=white" height="28" alt="LangChain" />
+    <img src="https://img.shields.io/badge/Chroma-FF6C37?style=for-the-badge&logo=chroma&logoColor=white" height="28" alt="ChromaDB" />
+    <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" height="28" alt="OpenAI" />
+    <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" height="28" alt="FastAPI" />
+    <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" height="28" alt="Python" />
+    <img src="https://img.shields.io/badge/SQLAlchemy-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white" height="28" alt="SQLAlchemy" />
+    <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" height="28" alt="React" />
+    <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" height="28" alt="Vite" />
+    <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" height="28" alt="SQLite" />
+   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" height="28" alt="JavaScript" />
+    <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" height="28" alt="HTML5" />
+    <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" height="28" alt="CSS3" />
+
+  <img src="https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" height="28" alt="VS Code" />
+<img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" height="28" alt="Git" />
+    <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white" height="28" alt="Postman" />
+    
+ 
+
+</div>
 
 <p align="center">
   <a href="#dart-about">About</a> &#xa0; | &#xa0; 
@@ -72,28 +94,6 @@ This project combines a FastAPI backend with a React frontend to create a seamle
 ---
 
 ## :rocket: Technologies
-
-<div align="center">
-    <img src="https://img.shields.io/badge/LangChain-000000?style=for-the-badge&logo=chainlink&logoColor=white" height="28" alt="LangChain" />
-    <img src="https://img.shields.io/badge/Chroma-FF6C37?style=for-the-badge&logo=chroma&logoColor=white" height="28" alt="ChromaDB" />
-    <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" height="28" alt="OpenAI" />
-    <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" height="28" alt="FastAPI" />
-    <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" height="28" alt="Python" />
-    <img src="https://img.shields.io/badge/SQLAlchemy-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white" height="28" alt="SQLAlchemy" />
-    <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black" height="28" alt="React" />
-    <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" height="28" alt="Vite" />
-    <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" height="28" alt="SQLite" />
-   <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" height="28" alt="JavaScript" />
-    <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" height="28" alt="HTML5" />
-    <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" height="28" alt="CSS3" />
-
-  <img src="https://img.shields.io/badge/VS_Code-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" height="28" alt="VS Code" />
-<img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" height="28" alt="Git" />
-    <img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white" height="28" alt="Postman" />
-    
- 
-
-</div>
 
 The following tools and frameworks were used in this project:
 
