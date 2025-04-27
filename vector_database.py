@@ -126,14 +126,20 @@ def process_files(files_paths=None, overwrite=False):
     """
     Process files and save to vector database
     """
-    if files_paths:
-        documents = load_documents(files_paths)
-    else:
-        raise ValueError("Either files_path or directory_path must be provided.")
-    
-    chunks = text_spliter(documents)
-    
-    # Save to vector database
-    save_chomadb(chunks, overwrite=overwrite)
+    # return True, "Files processed and saved to vector database successfully."
+    try:
+        if files_paths:
+            documents = load_documents(files_paths)
+        else:
+            raise ValueError("Either files_path or directory_path must be provided.")
+        
+        chunks = text_spliter(documents)
+        
+        # Save to vector database
+        save_chomadb(chunks, overwrite=overwrite)
+    except Exception as e:
+        print(f"Error processing files: {e}")
+        return False, str(e)
+    return True, "Files processed and saved to vector database successfully."
     
 get_vector_db()

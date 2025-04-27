@@ -12,3 +12,4 @@ langchain-chroma==0.2.3
 python-multipart==0.0.20
 langchain-experimental==0.3.4
 duckduckgo-search==8.0.1
+SQLAlchemy==2.0.40
