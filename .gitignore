@@ -1,6 +1,7 @@
 chroma_db/
 rag_agent.db
 myenv/
+uploaded_files/
 media/staff/
 media/users/
 media/products/

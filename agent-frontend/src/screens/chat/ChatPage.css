@@ -841,12 +841,12 @@ body.dark-mode {
 }
 
 .social-link {
-  color: var(--text-primary);
+  color:#0d6efd !important;
   transition: all 0.2s ease;
 }
 
 .social-link:hover {
-  color: #0d6efd;
+  color: #0d6efd !important;
   transform: translateY(-3px);
 }
 
