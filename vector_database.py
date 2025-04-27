@@ -126,7 +126,6 @@ def process_files(files_paths=None, overwrite=False):
     """
     Process files and save to vector database
     """
-    # return True, "Files processed and saved to vector database successfully."
     try:
         if files_paths:
             documents = load_documents(files_paths)

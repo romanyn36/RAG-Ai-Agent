@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Message from '../../components/Message';
-// chat 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./ChatPage.css";
@@ -24,10 +23,42 @@ const Responseloader = () => {
   );
 };
 
+const ReasoningSteps = ({ steps }) => {
+  if (!steps || steps.length === 0) return null;
+
+  return (
+    <div className="reasoning-steps">
+      <details>
+        <summary>View reasoning process</summary>
+        <div className="reasoning-steps-content">
+          {steps && steps?.map((step, index) => (
+            <div key={index} className="reasoning-step">
+              <div className="reasoning-action">
+                <strong>Action:</strong> {step.action.tool}
+                {step.action.log && (
+                  <div className="reasoning-thought">
+                    <em>{step.action.log}</em>
+                  </div>
+                )}
+                <div className="reasoning-input">
+                  <code>{step.action.tool_input}</code>
+                </div>
+              </div>
+              <div className="reasoning-observation">
+                <strong>Result:</strong>
+                <pre>{step.observation}</pre>
+              </div>
+            </div>
+          ))}
+        </div>
+      </details>
+    </div>
+  );
+};
+
 const ChatPage = () => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-  const [modeltype, setModelType] = useState(null);
   const [userInfo, setUserInfo] = useState({ name: "romani" });
   const [loadingChats, setLoadingChats] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
@@ -37,17 +68,17 @@ const ChatPage = () => {
     setCollapsed(!collapsed);
   };
   // chat 
-  const [chats, setChats] = useState([]); // Using mock data
-  const [currentChat, setCurrentChat] = useState(); // Start with a default chat
-  const [messages, setMessages] = useState([]); // Using mock messages
+  const [chats, setChats] = useState([]); 
+  const [currentChat, setCurrentChat] = useState(); 
+  const [messages, setMessages] = useState([]); 
   const [input, setInput] = useState("");
   const [renameModal, setRenameModal] = useState(false);
   const [newChatName, setNewChatName] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  const chatListRef = useRef(null); // Ref for the chat list
+  const chatListRef = useRef(null); 
   const chatContentRef = useRef(null);
   const [waitingForReply, setWaitingForReply] = useState(false);
-  const messagesEndRef = useRef(null); // Ref for auto-scrolling
+  const messagesEndRef = useRef(null); 
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -55,41 +86,31 @@ const ChatPage = () => {
   }, [messages]);
 
   useEffect(() => {
-    if (!userInfo) {
-      // navigate('/login?redirect=/dashboard');
-    }
-  }, [userInfo, navigate]);
-
-  useEffect(() => {
     setLoadingChats(true);
     apiClient.get('/chats/')
       .then(response => {
         const chats = response.data
         setChats(chats);
-        console.log("chats", chats)
         if (chats.length > 0) setCurrentChat(chats[0].id);
       })
       .catch(error => {
         setErrorChats(error.message || error.response.data.detail || "Error loading chats");
-        console.error("Error loading chats", error);
       }
       );
     setLoadingChats(false);
   }, [userInfo, navigate]);
 
   useEffect(() => {
-    if (currentChat) {
+    if (currentChat && currentChat !== "newChat") {
       setLoadingMessages(true);
       setErrorMessages('');
       apiClient.get(`/chats/${currentChat}/messages/`)
         .then(response => {
           const messages = response.data;
           setMessages(messages);
-          console.log("messages", messages);
         })
         .catch(error => {
           setErrorMessages(error.message || error.response?.data?.detail || "Error loading messages");
-          console.error("Error loading messages", error);
         })
         .finally(() => {
           setLoadingMessages(false);
@@ -127,6 +148,8 @@ const ChatPage = () => {
       });
   };
 
+  const [agentMode, setAgentMode] = useState(false);
+
   const handleSend = () => {
     if (!input.trim() && !selectedFile) return;
 
@@ -146,7 +169,7 @@ const ChatPage = () => {
       formData.append("files", selectedFile);
     }
     formData.append("query", input);
-    formData.append("agent", false);
+    formData.append("agent", agentMode); 
 
     // Send message to the server using the combined endpoint
     apiClient.post(`/chats/${currentChat}/send/`, formData)
@@ -272,7 +295,7 @@ const ChatPage = () => {
             </InputGroup>
           </div>
 
-          {/* Enhanced chat list loading and error display */}
+          {/*list loading and error display */}
           <div className="chat-list-container">
             {loadingChats ? (
               <div className="loader-container">
@@ -282,9 +305,9 @@ const ChatPage = () => {
             ) : errorChats ? (
               <div className="error-container">
                 <Message variant="danger">{errorChats}</Message>
-                <Button 
-                  variant="outline-primary" 
-                  size="sm" 
+                <Button
+                  variant="outline-primary"
+                  size="sm"
                   className="mt-2"
                   onClick={() => {
                     setErrorChats('');
@@ -419,9 +442,9 @@ const ChatPage = () => {
             ) : errorMessages ? (
               <div className="messages-error-container">
                 <Message variant="danger">{errorMessages}</Message>
-                <Button 
-                  variant="outline-primary" 
-                  size="sm" 
+                <Button
+                  variant="outline-primary"
+                  size="sm"
                   className="mt-2 d-block mx-auto"
                   onClick={() => {
                     setErrorMessages('');
@@ -459,21 +482,30 @@ const ChatPage = () => {
                     ) : (
                       <div className="message-content agent-content">
                         <div className="agent-icon"><Image src="/images/ai.png" alt="Agent" /></div>
-                        <div className="agent-text" dangerouslySetInnerHTML={{ __html: formatText(msg.body) }}></div>
+                        <div className="agent-text">
+                          <div dangerouslySetInnerHTML={{ __html: formatText(msg.body) }}></div>
+                          {msg.reasoning_steps && (
+                            <ReasoningSteps
+                              steps={typeof msg.reasoning_steps === 'string'
+                                ? JSON.parse(msg.reasoning_steps)
+                                : msg.reasoning_steps}
+                            />
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
                 </div>
               ))
             )}
-            
+
             {error && (
               <div className="general-error-container">
                 <Message variant='danger'>
                   {error}
-                  <Button 
-                    variant="outline-danger" 
-                    size="sm" 
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
                     className="ms-2"
                     onClick={() => setError('')}
                   >
@@ -482,7 +514,7 @@ const ChatPage = () => {
                 </Message>
               </div>
             )}
-            
+
             {waitingForReply && <Responseloader />}
             <div ref={messagesEndRef} />
           </div>
@@ -490,6 +522,21 @@ const ChatPage = () => {
 
         {currentChat && (
           <div className="input-container">
+            <div className="input-options">
+              <div className="form-check form-switch">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="agentModeToggle"
+                  checked={agentMode}
+                  onChange={() => setAgentMode(!agentMode)}
+                />
+                <label className="form-check-label" htmlFor="agentModeToggle">
+                  {agentMode ? 'Agent Mode' : 'Simple Mode'}
+                </label>
+              </div>
+            </div>
+
             {selectedFile && (
               <div className="selected-file">
                 <span title={selectedFile.name}>{selectedFile.name}</span>
@@ -502,6 +549,7 @@ const ChatPage = () => {
                 </Button>
               </div>
             )}
+
             <div className="message-input-group">
               <Form.Control
                 as="textarea"

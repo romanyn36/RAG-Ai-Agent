@@ -1,29 +1,44 @@
-import os
-import openai 
-import shutil
-import argparse
 import datetime
-from dotenv import load_dotenv
-from langchain_openai import OpenAIEmbeddings
-from langchain_chroma import Chroma
+from langchain.agents import Tool
+from langchain.agents import AgentExecutor
 from langchain_openai import ChatOpenAI,OpenAI
 from langchain.prompts import ChatPromptTemplate
 from vector_database import query_data,get_vector_db
 from langchain.agents import initialize_agent, AgentType
-from langchain.agents import Tool
-from langchain.agents import AgentExecutor
 from langchain_experimental.tools.python.tool import PythonREPLTool
 from langchain_community.tools.ddg_search.tool import DuckDuckGoSearchRun
 
 
 
 PROMPT_TEMPLATE = """
-Answer the question based only on the following context:
+Answer the question based on the following context:
 {context}
 
 ---------------
-Answer the question based on the above context: {question}
+the question : {question}
 """
+def parse_reasoning_steps(result):
+        response = result["output"]
+        reasoning_steps = []
+        if "intermediate_steps" in result:
+            for step in result["intermediate_steps"]:
+                action = step[0]  # The action the agent decided to take
+                observation = step[1]  # The result of the action
+                
+                # Handle empty observations or ensure they're strings
+                observation_str = str(observation) if observation else "No result returned"
+                
+                reasoning_steps.append({
+                    "action": {
+                        "tool": action.tool,
+                        "tool_input": action.tool_input,
+                        "log": action.log,  # Add the agent's thought process
+                    },
+                    "observation": observation_str
+                })
+        return response, reasoning_steps
+    
+    
 
 def agent_executor(query_text:str,agent=False):
     rlevant_docs = query_data(query_text)
@@ -61,15 +76,19 @@ def agent_executor(query_text:str,agent=False):
             agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
             verbose=True,
             handle_parsing_errors=True,
+            return_intermediate_steps=True,
         )
     
-        response = agent_executor.run(prompt)
+        # response = agent_executor.run(prompt)
+        result = agent_executor({"input": prompt})
+        response, reasoning_steps = parse_reasoning_steps(result)
     else:
         response = llm.invoke(prompt).content
     sources = [doc.metadata.get("source", None) for doc, _score in rlevant_docs]
     final_response = {
         "response": response,
-        "sources": sources
+        "sources": sources,
+        "reasoning_steps": reasoning_steps if agent else None
     }
     return final_response
     

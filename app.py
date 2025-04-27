@@ -2,18 +2,20 @@ import os
 import json
 import shutil
 from typing import List
-from pydantic import BaseModel
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, File, UploadFile, Form,HTTPException,status
-from fastapi.encoders import jsonable_encoder
-from agent import agent_executor
-from vector_database import get_vector_db, process_files
-from database import get_db, DBChat, DBMessage
-from sqlalchemy.orm import Session
 from fastapi import Depends
+from pydantic import BaseModel
+from agent import agent_executor
+from sqlalchemy.orm import Session
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
+from database import get_db, DBChat, DBMessage
+from fastapi.middleware.cors import CORSMiddleware
+from vector_database import get_vector_db, process_files
+from fastapi import FastAPI, File, UploadFile, Form,HTTPException,status
 
 
+
+# app configurations
 app = FastAPI()
 
 app.add_middleware(
@@ -27,9 +29,6 @@ app.add_middleware(
 UPLOAD_FOLDER = "uploaded_files"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Global variables
-_vector_store = None
-_retriever = None
 
 class Chat(BaseModel):
     id: int = 0
@@ -42,6 +41,7 @@ class Message(BaseModel):
     id: int
     type: str  # "user" or "agent"
     body: str
+    reasoning_steps: List[dict] = []  
     class Config:
         orm_mode = True
     
@@ -118,7 +118,6 @@ async def send_chat_message(
     files: List[UploadFile] = File(default=[]),
     db: Session = Depends(get_db)
 ):
-    print(f"chat_id: {chat_id}, query: {query}, agent: {agent}, files: {len(files)}")
     
     # Handle chat creation for new chats
     if chat_id == 'newChat':
@@ -171,9 +170,13 @@ async def send_chat_message(
     db.refresh(user_message)
     
     # Generate response
+    reasoning_steps = []
     if query and query != "":
-        response = agent_executor(query_text=query, agent=False)
-        final_response = response['response'] + "\n".join(response['sources'])
+        response = agent_executor(query_text=query, agent=agent)
+        final_response = response['response']  
+        if response['sources']:
+            final_response += '\n\nSources:\n' + "\n".join(response['sources'])
+        reasoning_steps = response['reasoning_steps']
         
     elif files:
         # If only files were uploaded with no query
@@ -182,7 +185,7 @@ async def send_chat_message(
         final_response = "I received your message but it appears to be empty. How can I assist you?"
     
     # Add agent message to chat
-    agent_message = DBMessage(chat_id=chat_id, type="agent", body=final_response)
+    agent_message = DBMessage(chat_id=chat_id, type="agent", body=final_response, reasoning_steps=json.dumps(reasoning_steps))
     db.add(agent_message)
     db.commit()
     db.refresh(agent_message)
@@ -194,7 +197,8 @@ async def send_chat_message(
         'agent_response': {
             'id': agent_message.id,
             'type': agent_message.type,
-            'body': agent_message.body
+            'body': agent_message.body,
+            'reasoning_steps': reasoning_steps,
         },
         'chat_id': chat_id,
         'chat_name': chat.name

@@ -1,6 +1,7 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Text
-from sqlalchemy.ext.declarative import declarative_base
+import json
 from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Text
 
 # Create SQLite engine
 DATABASE_URL = "sqlite:///./rag_agent.db"
@@ -29,9 +30,9 @@ class DBMessage(Base):
     __tablename__ = "messages"
     
     id = Column(Integer, primary_key=True, index=True)
-    message_id = Column(Integer)  
     type = Column(String)  
     body = Column(Text)
+    reasoning_steps = Column(Text, nullable=True)  # Store as JSON string if needed
     chat_id = Column(Integer, ForeignKey("chats.id"))
     
     # Relationship to chat
@@ -39,9 +40,10 @@ class DBMessage(Base):
     
     def to_dict(self):
         return {
-            "id": self.message_id,
+            "id": self.id,
             "type": self.type,
-            "body": self.body
+            "body": self.body,
+            "reasoning_steps": json.loads(self.reasoning_steps) if self.reasoning_steps else []
         }
 
 # Create tables

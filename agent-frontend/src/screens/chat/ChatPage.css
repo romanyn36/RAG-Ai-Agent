@@ -429,3 +429,56 @@
   }
 }
 
+.reasoning-steps {
+  margin-top: 10px;
+  border-top: 1px solid #eaeaea;
+  padding-top: 10px;
+}
+
+.reasoning-steps summary {
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.reasoning-steps-content {
+  margin-top: 10px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+.reasoning-step {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed #dee2e6;
+}
+
+.reasoning-step:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.reasoning-thought {
+  color: #6c757d;
+  margin: 5px 0;
+  padding-left: 10px;
+  border-left: 3px solid #6c757d;
+}
+
+.reasoning-input {
+  background-color: #e9ecef;
+  padding: 5px;
+  border-radius: 4px;
+  margin: 5px 0;
+}
+
+.reasoning-observation pre {
+  background-color: #e9ecef;
+  padding: 8px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  margin-top: 5px;
+}
+

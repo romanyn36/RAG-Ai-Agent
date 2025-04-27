@@ -1,4 +1,5 @@
 chroma_db/
+rag_agent.db
 myenv/
 media/staff/
 media/users/
