@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./ChatPage.css";
 import { Button, InputGroup, Form, Image } from "react-bootstrap";
-import { BsChevronLeft, BsChevronRight, BsChatTextFill, BsPencilSquare, BsTrash, BsPaperclip, BsSend, BsSearch } from "react-icons/bs";
+import { BsChevronLeft, BsChevronRight, BsChatTextFill, BsPencilSquare, BsTrash, BsPaperclip, BsSend, BsSearch, BsMoon, BsSun } from "react-icons/bs";
 import AlertModal from "../../components/AlertModal";
 import apiClient from '../../AppClient';
 import Loader from '../../components/Loader';
@@ -50,6 +50,7 @@ const ReasoningSteps = ({ steps }) => {
               </div>
             </div>
           ))}
+
         </div>
       </details>
     </div>
@@ -64,6 +65,27 @@ const ChatPage = () => {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [errorChats, setErrorChats] = useState('');
   const [errorMessages, setErrorMessages] = useState('');
+  const [darkMode, setDarkMode] = useState(() => {
+    // Check local storage for dark mode preference
+    const savedMode = localStorage.getItem('darkMode');
+    return savedMode === 'true';
+  });
+  
+  // Effect to apply dark mode to document body
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+    // Save preference to localStorage
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(prevMode => !prevMode);
+  };
+  
   const handleToggleSidebar = () => {
     setCollapsed(!collapsed);
   };
@@ -148,7 +170,7 @@ const ChatPage = () => {
       });
   };
 
-  const [agentMode, setAgentMode] = useState(false);
+  const [agentMode, setAgentMode] = useState(true);
 
   const handleSend = () => {
     if (!input.trim() && !selectedFile) return;
@@ -259,7 +281,7 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="modern-chat-app">
+    <div className={`modern-chat-app ${darkMode ? 'dark-mode' : ''}`}>
       {/* Sidebar */}
       <nav
         id="sidebar"
@@ -397,38 +419,75 @@ const ChatPage = () => {
 
       <div className="content-container">
         <div className="content-header">
-
           <button
             className="sidebar-toggle"
             onClick={handleToggleSidebar}
           >
             {collapsed ? <BsChevronRight /> : <BsChevronLeft />}
           </button>
-          {currentChat && (
-            <h2 className="current-chat-title">
-              {chats.find(chat => chat.id === currentChat)?.name || "Chat"}
-            </h2>
-          )}
+          <div className="header-content">
+            <div className="app-branding">
+              <img src="/images/ai.png" alt="RAG AI-Agent" className="app-logo" />
+              <h1 className="app-name">RAG AI-Agent</h1>
+            </div>
+            {currentChat && (
+              <h2 className="current-chat-title">
+                {chats.find(chat => chat.id === currentChat)?.name || "Chat"}
+              </h2>
+            )}
+          </div>
+          <button 
+            className="dark-mode-toggle"
+            onClick={toggleDarkMode}
+            title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {darkMode ? <BsSun /> : <BsMoon />}
+          </button>
         </div>
 
         <div className="chat-container" ref={chatContentRef}>
           {messages.length === 0 && !currentChat && (
             <div className="welcome-container">
               <div className="welcome-content">
-                <h2>Welcome to DocSemantic Generator</h2>
-                <p>Start by creating a new conversation</p>
+                <h2>Welcome to RAG AI-Agent</h2>
+                <p>Your intelligent document assistant powered by Retrieval-Augmented Generation</p>
+                <div className="welcome-features">
+                  <div className="feature-card">
+                    <div className="feature-icon">📄</div>
+                    <div className="feature-text">Upload documents for contextual answers</div>
+                  </div>
+                  <div className="feature-card">
+                    <div className="feature-icon">🔍</div>
+                    <div className="feature-text">Ask questions in natural language</div>
+                  </div>
+                  <div className="feature-card">
+                    <div className="feature-icon">🤖</div>
+                    <div className="feature-text">Toggle Agent mode for advanced reasoning</div>
+                  </div>
+                </div>
                 <Button variant="primary" onClick={handleAddNewChat} className="welcome-btn">
-                  + New Chat
+                  + Start a New Conversation
                 </Button>
               </div>
             </div>
           )}
 
           {messages.length === 0 && currentChat && (
-            <div className="welcome-container">
-              <div className="welcome-content">
+            <div className="empty-chat-container">
+              <div className="empty-chat-content">
                 <h3>Start a new conversation</h3>
-                <p>Enter your query below to begin</p>
+                <p>Upload a document or ask a question to get started</p>
+                <div className="empty-chat-suggestions">
+                  <div className="suggestion-pill" onClick={() => setInput("What is Th Current Time?")}>
+                    What is Th Current Time?
+                  </div>
+                  <div className="suggestion-pill" onClick={() => setInput("what is the square root of 16?")}>
+                    what is the square root of 16?
+                  </div>
+                  <div className="suggestion-pill" onClick={() => setInput("What do You Know about Egyptian Pyramids?")}>
+                    What do You Know about Egyptian Pyramids?
+                  </div>
+                </div>
               </div>
             </div>
           )}
