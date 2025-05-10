@@ -17,20 +17,20 @@
 
 /* Dark mode variables */
 .dark-mode {
-  --bg-primary: #121212;
-  --bg-secondary: #1e1e1e;
-  --text-primary: #e0e0e0;
-  --text-secondary: #aaaaaa;
-  --border-color: #333333;
-  --chat-user-bg: #2c3e50;
-  --chat-agent-bg: #2d2d2d;
-  --feature-card-bg: #252525;
-  --input-bg: #2d2d2d;
-  --sidebar-bg: #1e1e1e;
-  --header-bg: #1a1a1a;
-  --suggestion-bg: #2d2d2d;
-  --suggestion-hover: #3d3d3d;
-  --component-shadow: rgba(0, 0, 0, 0.3);
+  --bg-primary: #181818; /* Darker background for better contrast */
+  --bg-secondary: #242424; /* Slightly lighter secondary background */
+  --text-primary: #f5f5f5; /* Brighter text for readability */
+  --text-secondary: #b0b0b0; /* Softer secondary text */
+  --border-color: #444444; /* More distinct border color */
+  --chat-user-bg: #1e3a5f; /* Richer blue for user messages */
+  --chat-agent-bg: #333333; /* Neutral dark gray for agent messages */
+  --feature-card-bg: #2a2a2a; /* Slightly lighter for feature cards */
+  --input-bg: #2e2e2e; /* Improved input background contrast */
+  --sidebar-bg: #202020; /* Darker sidebar background */
+  --header-bg: #1c1c1c; /* Darker header background */
+  --suggestion-bg: #2e2e2e; /* Consistent with input background */
+  --suggestion-hover: #3a3a3a; /* Slightly brighter hover effect */
+  --component-shadow: rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
 }
 
 /* Apply these variables throughout your styles */

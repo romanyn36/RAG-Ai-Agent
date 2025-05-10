@@ -61,9 +61,13 @@
 
 ## :dart: About
 
-**RAG AI-Agent** is an intelligent question-answering system built on Retrieval-Augmented Generation technology. It allows users to have conversational interactions with their documents by uploading files (PDFs, TXTs, etc.), which are then semantically parsed, indexed, and made available for natural language queries. The system dynamically retrieves relevant information from the documents to generate accurate, contextual responses.
+## :dart: About
 
-This project combines a FastAPI backend with a React frontend to create a seamless chat-based interface. Users can choose between a simple RAG mode or an advanced Agent mode that uses reasoning and tools like calculators and web search to extend the system's capabilities.
+**RAG AI-Agent** is an intelligent question-answering system built on Retrieval-Augmented Generation (RAG) technology, with LangChain and vector databases at its core. The system enables users to interact conversationally with their documents by uploading files (PDFs, TXTs, etc.), which are semantically parsed, embedded, and indexed for natural language queries. When a user asks a question, the system dynamically retrieves the most relevant information from the vector database and leverages advanced language models to generate accurate, contextual responses.
+
+A key feature of this project is its integration with **LangChain's ZERO_SHOT_REACT_DESCRIPTION agent type**, which empowers the Agent mode. This agent can reason step-by-step, use external tools (like calculators, web search, and date/time), and transparently show its thought process—making the system highly extensible and explainable. The vector database (ChromaDB) ensures efficient semantic search and retrieval, forming the backbone of the RAG pipeline.
+
+The project is full-stack: it combines a FastAPI backend (for API, document processing, vector storage, and agent orchestration) with a modern React frontend (for chat UI, file upload, and conversation management), delivering a seamless and interactive user experience.
 
 ---
 
@@ -227,6 +231,13 @@ You can adjust the following settings:
    - Modify `PROMPT_TEMPLATE` to change how responses are generated
    - Add or remove tools from the agent
 
+# ## :construction: What’s Next?
+RAG AI-Agent is actively under development, and I’m working on exciting new features to make it even more powerful:  
+
+Login & Authentication: Secure user access with robust authentication.  
+User Registration: Onboard new users seamlessly with a registration system.  
+Personalized Chat History: Store and manage conversation history for each user.  
+Expanded File Support: Add compatibility for more file types to enhance document processing capabilities.
 ## :memo: License
 
 This project is licensed under the MIT License. For more details, see the [LICENSE](LICENSE) file.
